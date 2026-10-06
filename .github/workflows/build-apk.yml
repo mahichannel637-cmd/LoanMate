@@ -1,0 +1,35 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract Android project
+        run: |
+          unzip -q LoanMate-Android-Project.zip -d android-project
+          cd android-project
+          if [ -d "LoanMate-Android-Project" ]; then
+            cd LoanMate-Android-Project
+          fi
+          chmod +x gradlew
+
+      - name: Build APK
+        working-directory: android-project
+        run: |
+          if [ -d "LoanMate-Android-Project" ]; then
+            cd LoanMate-Android-Project
+          fi
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: LoanMate-APK
+          path: android-project/**/build/outputs/apk/debug/*.apk
